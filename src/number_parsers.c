@@ -35,6 +35,7 @@ unsigned int parse_int(const char* const cstr, short* const parsed_length)
 
 double parse_double(const char *cstr, short* parsed_length)
 {
+
     unsigned int integer_part = 0;
     unsigned int decimal_part = 0;
 
@@ -42,9 +43,13 @@ double parse_double(const char *cstr, short* parsed_length)
     short decimal_part_len;
 
     integer_part = parse_int(cstr, &integer_part_len);
+
+    //so... it is bad to put there something like 0.99999999999999999999999999999999999999
+    //Where sizeof decimal part greater than sizeof int
+    //but whatever
     decimal_part = parse_int(cstr + integer_part_len + 1, &decimal_part_len);
 
-    if (parsed_length != NULL) *parsed_length = (signed short)(integer_part_len + decimal_part_len + 1);
+    if (parsed_length != NULL) *parsed_length = (signed short) (integer_part_len + decimal_part_len + 1);
 
     return integer_part + decimal_part / (double) exp_ten_based(decimal_part_len);
 }

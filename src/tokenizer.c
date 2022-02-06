@@ -122,8 +122,6 @@ void get_token_at
     Token ret;
     const char* expr_part = expression_cstr + offset;
 
-    while (expr_part[0] == ' ') offset++;
-
     ret.tokenType = get_token_type(expr_part[0]);
 
     switch (ret.tokenType)

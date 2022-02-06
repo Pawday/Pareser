@@ -49,11 +49,11 @@ Token* tokenize_expression(const char* expression_cstr);
 TokenType get_token_type(char first_char);
 
 /**
- *
+ * Create token from offset in the c string (white spaces must be discarded)
  * @param[in]  expression_cstr
  * @param[in]  offset
  * @param[out] token
- * @param[out] token_string_len can be NULL
+ * @param[out] token_string_len length of tokenized string (can be NULL)
  */
 void get_token_at
 (

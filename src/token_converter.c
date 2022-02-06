@@ -125,6 +125,7 @@ size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
         int num_len = 0;
 
 
+        //get num of digits in ten based number system by devising number by 10 until it hits 0
         {
             int divisible_number = number;
             do
@@ -134,20 +135,30 @@ size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
             } while (divisible_number != 0);
         }
 
+        // scroll number if its ten based representation don't fit into buffer
+        /*
+         * For example:
+         * {
+         *     buffer_size = 3
+         *     number = 12345
+         *     12345 -> 1234 -> 123
+         * }
+         */
         if (num_len > buffer_size)
         {
             for (int i = 0; i < num_len - buffer_size; i++)
                 number /= 10;
         }
 
+
+        //Devising number by ten and check the remainder
         int int_division_res;
         int remainder;
         do
         {
+
             if (buffer_size < (offset + 1))
-            {
                 return offset;
-            }
 
             int_division_res = number / 10;
             remainder = number - int_division_res * 10;
@@ -172,6 +183,7 @@ size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
         }
         while (number != 0);
 
+        //reverse char order in buffer
         for (int i = 0; i < (offset / 2); i++)
         {
             char tmp = buffer[i];
@@ -209,24 +221,20 @@ size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
             number = remainder;
             number *= 10;
 
-            if (buffer_size > offset)
+            if (buffer_size < (offset + 1))  return offset;
+
+            switch ((int) number / 1)
             {
-                switch ((int) number / 1)
-                {
-                    case 0: buffer[offset++] = '0'; break;
-                    case 1: buffer[offset++] = '1'; break;
-                    case 2: buffer[offset++] = '2'; break;
-                    case 3: buffer[offset++] = '3'; break;
-                    case 4: buffer[offset++] = '4'; break;
-                    case 5: buffer[offset++] = '5'; break;
-                    case 6: buffer[offset++] = '6'; break;
-                    case 7: buffer[offset++] = '7'; break;
-                    case 8: buffer[offset++] = '8'; break;
-                    case 9: buffer[offset++] = '9'; break;
-                }
-            } else
-            {
-                return offset;
+                case 0: buffer[offset++] = '0';break;
+                case 1: buffer[offset++] = '1';break;
+                case 2: buffer[offset++] = '2';break;
+                case 3: buffer[offset++] = '3';break;
+                case 4: buffer[offset++] = '4';break;
+                case 5: buffer[offset++] = '5';break;
+                case 6: buffer[offset++] = '6';break;
+                case 7: buffer[offset++] = '7';break;
+                case 8: buffer[offset++] = '8';break;
+                case 9: buffer[offset++] = '9';break;
             }
         }
         while (remainder > 0);
