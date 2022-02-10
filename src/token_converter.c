@@ -6,7 +6,8 @@ static const char* token_type_map[] =
     [TOK_OPERATION]      = "OPERATION",
     [TOK_NUMBER]         = "NUMBER",
     [TOK_PARENTHESIS]    = "PARENTHESIS",
-    [TOK_END]            = "END"
+    [TOK_END]            = "END",
+    [TOK_UNKNOWN]        = "UNKNOWN"
 };
 
 
@@ -86,6 +87,17 @@ void token_to_string_ex(Token t, char *buffer, size_t buffer_size)
 
             buffer[offset] = 0;
 
+        }
+        return;
+
+        case TOK_UNKNOWN:
+        {
+            size_t name_length = strlen(token_type_map[t.tokenType]);
+            memcpy_s(buffer,buffer_size,token_type_map[t.tokenType],name_length);
+
+            offset += name_length;
+
+            buffer[offset] = 0;
         }
         return;
 

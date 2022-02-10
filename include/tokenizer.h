@@ -5,7 +5,8 @@ typedef enum TokenType
     TOK_OPERATION,
     TOK_NUMBER,
     TOK_PARENTHESIS,
-    TOK_END
+    TOK_END,
+    TOK_UNKNOWN
 } TokenType;
 
 typedef struct Token

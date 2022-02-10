@@ -107,7 +107,7 @@ TokenType get_token_type(char first_char)
         case 0:
             return TOK_END;
 
-        default: assert(0); return 0; //syntax_error
+        default: return TOK_UNKNOWN; //syntax_error
     }
 }
 
@@ -142,8 +142,12 @@ void get_token_at
                 case '(': *((ParenthesisContent*) ret.content) = PARENTHESIS_OPEN; break;
                 case ')': *((ParenthesisContent*) ret.content) = PARENTHESIS_CLOSE; break;
             }
-            *token_string_len = 1;
+            if (token_string_len != NULL) *token_string_len = 1;
+            break;
         case TOK_END:
+            break;
+        case TOK_UNKNOWN:
+            if (token_string_len != NULL) *token_string_len = 1;
             break;
     }
 
