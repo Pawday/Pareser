@@ -56,6 +56,7 @@ size_t count_tokens_in_expr(const char* const expression_cstr_cleaned)
     {
         get_token_at(expression_cstr_cleaned,parse_offset,&t,&last_token_len);
         parse_offset += last_token_len;
+        free_token_content(t);
         tokens_amount++;
     }
     while (t.tokenType != TOK_END);
@@ -207,4 +208,24 @@ NumberType detect_number_type(const char *number_cstr)
         return NUM_RATIONAL;
     else
         return NUM_INTEGER;
+}
+
+void free_token_content(Token token)
+{
+    switch (token.tokenType)
+    {
+        case TOK_NUMBER:
+        {
+            NumberContent *numberContent = (NumberContent *) token.content;
+            free(numberContent->number_data);
+            free(numberContent);
+            break;
+        }
+        case TOK_PARENTHESIS:
+        case TOK_OPERATION:
+            free(token.content);
+        case TOK_END:
+        case TOK_UNKNOWN:
+            break;
+    }
 }

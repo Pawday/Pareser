@@ -64,6 +64,9 @@ void get_token_at
         short* token_string_len
 );
 
+
+void free_token_content(Token token);
+
 void token_content_set_operation(OperationContent* content, char operation_char);
 /**
  *
