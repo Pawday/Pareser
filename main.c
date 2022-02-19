@@ -1,7 +1,9 @@
 #include <tokenizer.h>
 #include <stdio.h>
+#include <string.h>
 #include <visual/token_converter.h>
-#include <vcruntime_string.h>
+#include <parser.h>
+
 
 
 int main()
@@ -10,23 +12,25 @@ int main()
 
 
     Token *pToken = tokenize_expression(expression);
-    Token *pTokenCp = pToken;
+    char buffer[50];
 
-    char buffer[400];
-
-
+//#define ITERATE_TOKENS
+#ifdef ITERATE_TOKENS
     Token t;
     while (1)
     {
         if (t.tokenType == TOK_END) break;
-        t = *pTokenCp;
+        t = *pToken;
         memset(buffer, 0xff, sizeof(buffer));
         token_to_string_ex(t, buffer, sizeof(buffer));
         fprintf(stdout,"%s\n",buffer);
         fflush(stdout);
-        pTokenCp++;
+        pToken++;
     }
     while (t.tokenType != TOK_END);
+#endif
+    Node* tree = create_tree(pToken);
+
 
     return 0;
 }
