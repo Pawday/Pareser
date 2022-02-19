@@ -3,8 +3,8 @@
 
 static const char* token_type_map[] =
 {
-    [TOK_OPERATION]      = "OPERATION",
-    [TOK_NUMBER]         = "NUMBER",
+    [TOK_OPERATION]      = "NODE_OPERATION",
+    [TOK_NUMBER]         = "NODE_NUMBER",
     [TOK_PARENTHESIS]    = "PARENTHESIS",
     [TOK_END]            = "END",
     [TOK_UNKNOWN]        = "UNKNOWN"
@@ -109,7 +109,11 @@ void token_to_string_ex(Token t, char *buffer, size_t buffer_size)
 
             offset += name_length;
 
-            if (offset + 4 > buffer_size) return;
+            if (offset + 4 >= buffer_size)
+            {
+                buffer[offset] = 0;
+                return;
+            }
 
             buffer[offset++] = ' ';
             buffer[offset++] = '-';
