@@ -10,17 +10,17 @@ typedef enum NodeType
     NODE_NUMBER,
 } NodeType;
 
-typedef struct Node
+typedef struct MathNode
 {
     NodeType type;
     void* nodeContent;
-} Node;
+} MathNode;
 
 typedef struct NodeOperationContent
 {
     OperationType operationType;
-    Node* left;
-    Node* right;
+    MathNode* left;
+    MathNode* right;
 } NodeOperationContent;
 
 typedef struct NodeNumberContent
@@ -30,14 +30,14 @@ typedef struct NodeNumberContent
 
 typedef struct NodeSubtreeContent
 {
-    Node* subtreeRootNode;
+    MathNode* subtreeRootNode;
 } NodeSubtreeContent;
 
 typedef struct NodeNegationContent
 {
-    Node* negatedTreeRootNode;
+    MathNode* negatedTreeRootNode;
 } NodeNegationContent;
 
-Node* create_tree(Token* token_list);
+MathNode* create_tree(Token* token_list);
 
-Node* create_number_node(Token number_token);
+MathNode* create_number_node(Token number_token);

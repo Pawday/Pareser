@@ -1,19 +1,19 @@
-#include <parser.h>
+#include <math_parser.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <assert.h>
 
 
-static void free_operation_tree(Node* operationTreeRoot);
-static void free_number_tree(Node* numberTreeRoot);
-Node* create_operation_tree(OperationType operationType, Node* leftOperand,Node* rightOperand);
-Node* parse_operand_node(Token* token_list, size_t token_offset, size_t* parsed_tokens_amount);
+static void free_operation_tree(MathNode* operationTreeRoot);
+static void free_number_tree(MathNode* numberTreeRoot);
+MathNode* create_operation_tree(OperationType operationType, MathNode* leftOperand, MathNode* rightOperand);
+MathNode* parse_operand_node(Token* token_list, size_t token_offset, size_t* parsed_tokens_amount);
 
-Node* create_tree_ex(Token* token_list, size_t token_offset, size_t* parsed_tokens_amount)
+MathNode* create_tree_ex(Token* token_list, size_t token_offset, size_t* parsed_tokens_amount)
 {
     Token* process_token_list = token_list + token_offset;
 
-    Node* current_root = NULL;
+    MathNode* current_root = NULL;
 
     if (token_list == NULL) return NULL;
 
@@ -29,7 +29,7 @@ Node* create_tree_ex(Token* token_list, size_t token_offset, size_t* parsed_toke
         {
             case TOK_NUMBER:
             {
-                Node* number_node = create_number_node(current_token);
+                MathNode* number_node = create_number_node(current_token);
 
                 current_root = number_node;
                 processed_token_index++;
@@ -44,10 +44,10 @@ Node* create_tree_ex(Token* token_list, size_t token_offset, size_t* parsed_toke
 
                 OperationContent* operation_content = (OperationContent *) current_token.content;
 
-                Node* left_operand = current_root;
+                MathNode* left_operand = current_root;
                 size_t right_operand_token_am;
 
-                Node* right_operand = parse_operand_node(process_token_list, processed_token_index + 1, &right_operand_token_am);
+                MathNode* right_operand = parse_operand_node(process_token_list, processed_token_index + 1, &right_operand_token_am);
 
                 if (right_operand == NULL)
                 {
@@ -55,7 +55,7 @@ Node* create_tree_ex(Token* token_list, size_t token_offset, size_t* parsed_toke
                     assert(0);
                 }
 
-                Node* operation_node = create_operation_tree(operation_content->operation_type, left_operand, right_operand);
+                MathNode* operation_node = create_operation_tree(operation_content->operation_type, left_operand, right_operand);
 
                 current_root = operation_node;
                 processed_token_index += right_operand_token_am;
@@ -71,7 +71,7 @@ Node* create_tree_ex(Token* token_list, size_t token_offset, size_t* parsed_toke
                 {
                     assert(current_root == NULL); //TODO: syntax error or implicit OP_MULTIPLICATION
 
-                    Node* sub_tree_node = malloc(sizeof(Node));
+                    MathNode* sub_tree_node = malloc(sizeof(MathNode));
 
                     sub_tree_node->type = NODE_SUBTREE;
 
@@ -102,7 +102,7 @@ Node* create_tree_ex(Token* token_list, size_t token_offset, size_t* parsed_toke
     return current_root;
 }
 
-Node* parse_operand_node(Token* token_list, size_t token_offset, size_t* parsed_tokens_amount)
+MathNode* parse_operand_node(Token* token_list, size_t token_offset, size_t* parsed_tokens_amount)
 {
     Token* process_token_list = token_list + token_offset;
 
@@ -114,7 +114,11 @@ Node* parse_operand_node(Token* token_list, size_t token_offset, size_t* parsed_
         }
         case TOK_PARENTHESIS:
         {
-            Node* ret = create_tree_ex(process_token_list, 1, parsed_tokens_amount);
+            MathNode* ret = malloc(sizeof(MathNode));
+            ret->type = NODE_SUBTREE;
+            MathNode* subtree_root = create_tree_ex(process_token_list, 1, parsed_tokens_amount);
+            ret->nodeContent = malloc(sizeof(NodeSubtreeContent));
+            ((NodeSubtreeContent*) ret->nodeContent)->subtreeRootNode = subtree_root;
             *parsed_tokens_amount += 1;
             return ret;
         }
@@ -126,14 +130,14 @@ Node* parse_operand_node(Token* token_list, size_t token_offset, size_t* parsed_
 }
 
 
-Node* create_tree(Token* token_list)
+MathNode* create_tree(Token* token_list)
 {
     return create_tree_ex(token_list, 0, NULL);
 }
 
-Node* create_number_node(Token number_token)
+MathNode* create_number_node(Token number_token)
 {
-    Node* number_node = malloc(sizeof(Node));
+    MathNode* number_node = malloc(sizeof(MathNode));
 
     number_node->type = NODE_NUMBER;
     number_node->nodeContent = malloc(sizeof(NodeNumberContent));
@@ -142,9 +146,9 @@ Node* create_number_node(Token number_token)
     return number_node;
 }
 
-Node* create_operation_tree(OperationType operationType, Node* leftOperand, Node* rightOperand)
+MathNode* create_operation_tree(OperationType operationType, MathNode* leftOperand, MathNode* rightOperand)
 {
-    Node* ret = malloc(sizeof(Node));
+    MathNode* ret = malloc(sizeof(MathNode));
 
     ret->type = NODE_OPERATION;
 
@@ -160,7 +164,7 @@ Node* create_operation_tree(OperationType operationType, Node* leftOperand, Node
     return ret;
 }
 
-void free_tree(Node* treeRoot)
+void free_tree(MathNode* treeRoot)
 {
     switch (treeRoot->type)
     {
@@ -174,14 +178,14 @@ void free_tree(Node* treeRoot)
             break;
         case NODE_NEGATION:
         {
-            Node* subtree = ((NodeNegationContent*) treeRoot->nodeContent)->negatedTreeRootNode;
+            MathNode* subtree = ((NodeNegationContent*) treeRoot->nodeContent)->negatedTreeRootNode;
             free_tree(subtree);
             free(treeRoot);
             return;
         }
         case NODE_SUBTREE:
         {
-            Node* subtree = ((NodeSubtreeContent*) treeRoot->nodeContent)->subtreeRootNode;
+            MathNode* subtree = ((NodeSubtreeContent*) treeRoot->nodeContent)->subtreeRootNode;
             free_tree(subtree);
             free(treeRoot);
             return;
@@ -189,7 +193,7 @@ void free_tree(Node* treeRoot)
     }
 }
 
-void free_number_tree(Node* numberTreeRoot)
+void free_number_tree(MathNode* numberTreeRoot)
 {
     assert(numberTreeRoot->type == NODE_NUMBER);
 
@@ -200,7 +204,7 @@ void free_number_tree(Node* numberTreeRoot)
     free(numberTreeRoot);
 }
 
-void free_operation_tree(Node* operationTreeRoot)
+void free_operation_tree(MathNode* operationTreeRoot)
 {
     assert(operationTreeRoot->type == NODE_OPERATION);
 

@@ -1,10 +1,10 @@
-#include <visual/token_converter.h>
+#include <visual/token_dumper.h>
 #include <string.h>
 
 static const char* token_type_map[] =
 {
-    [TOK_OPERATION]      = "NODE_OPERATION",
-    [TOK_NUMBER]         = "NODE_NUMBER",
+    [TOK_OPERATION]      = "TOK_OPERATION",
+    [TOK_NUMBER]         = "TOK_NUMBER",
     [TOK_PARENTHESIS]    = "PARENTHESIS",
     [TOK_END]            = "END",
     [TOK_UNKNOWN]        = "UNKNOWN"
@@ -130,7 +130,7 @@ void token_to_string_ex(Token t, char *buffer, size_t buffer_size)
     }
 }
 
-size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
+size_t number_to_string(NumberContent content, char* buffer, size_t buffer_size)
 {
     if (content.number_type == NUM_INTEGER)
     {
@@ -173,8 +173,11 @@ size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
         do
         {
 
-            if (buffer_size < (offset + 1))
+            if (buffer_size <= (offset + 1))
+            {
+                buffer[offset] = 0;
                 return offset;
+            }
 
             int_division_res = number / 10;
             remainder = number - int_division_res * 10;
@@ -207,6 +210,8 @@ size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
             buffer[offset - i - 1] = tmp;
         }
 
+        buffer[offset] = 0;
+
         return offset;
     }
 
@@ -226,7 +231,11 @@ size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
 
         offset = int_part_len;
 
-        if (buffer_size < (offset + 1))  return offset;
+        if (buffer_size <= (offset + 1))
+        {
+            buffer[offset] = 0;
+            return offset;
+        }
 
         buffer[offset++] = '.';
 
@@ -237,7 +246,11 @@ size_t number_to_string(NumberContent content, char *buffer, size_t buffer_size)
             number = remainder;
             number *= 10;
 
-            if (buffer_size < (offset + 1))  return offset;
+            if (buffer_size <= (offset + 1))
+            {
+                buffer[offset] = 0;
+                return offset;
+            }
 
             switch ((int) number / 1)
             {
