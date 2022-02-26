@@ -4,12 +4,11 @@
 #include <math_parser.h>
 #include <visual/tree_dumper.h>
 #include <visual/node_dumper.h>
-#include <visual/token_dumper.h>
 
 
 int main()
 {
-    const char* expression = "1 + (3 * 4) - 5.243";
+    const char* expression = "-1 + 45 - (255 - -3)";
 
 
     Token *pToken = tokenize_expression(expression);
@@ -60,8 +59,15 @@ int main()
         {
             case NODE_SUBTREE:
             {
-                int subtree_node_index = get_index_by_node(index_node_list, am, ((NodeSubtreeContent*)n.node->nodeContent)->subtreeRootNode);
+                unsigned int subtree_node_index = get_index_by_node(index_node_list, am, ((NodeSubtreeContent*)n.node->nodeContent)->subtreeRootNode);
                 printf("node_%d -> node_%d \n", i, subtree_node_index);
+                break;
+            }
+
+            case NODE_NEGATION:
+            {
+                unsigned int negated_subtree_node_index = get_index_by_node(index_node_list, am, ((NodeNegationContent *)n.node->nodeContent)->negatedTreeRootNode);
+                printf("node_%d -> node_%d \n", i, negated_subtree_node_index);
                 break;
             }
 

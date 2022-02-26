@@ -38,11 +38,29 @@ MathNode* create_tree_ex(Token* token_list, size_t token_offset, size_t* parsed_
 
             case TOK_OPERATION:
             {
-                //TODO: handle negation here
                 //TODO: handle operation precedence
 
 
                 OperationContent* operation_content = (OperationContent *) current_token.content;
+
+                if (operation_content->operation_type == OP_SUBTRACTION && current_root == NULL)
+                {
+                    MathNode* negation_node = malloc(sizeof(MathNode));
+                    negation_node->type = NODE_NEGATION;
+
+                    NodeNegationContent* negation_content = malloc(sizeof(NodeNegationContent));
+                    negation_node->nodeContent = negation_content;
+
+                    size_t negated_operand_token_am;
+
+                    negation_content->negatedTreeRootNode = parse_operand_node(process_token_list, processed_token_index + 1, &negated_operand_token_am);
+
+                    processed_token_index += negated_operand_token_am;
+                    processed_token_index++;
+
+                    current_root = negation_node;
+                    break;
+                }
 
                 MathNode* left_operand = current_root;
                 size_t right_operand_token_am;
@@ -122,7 +140,28 @@ MathNode* parse_operand_node(Token* token_list, size_t token_offset, size_t* par
             *parsed_tokens_amount += 1;
             return ret;
         }
-        case TOK_OPERATION: //  like "1 + + 1"
+        case TOK_OPERATION:
+        {
+            // handle negation
+            OperationContent* op_content = (OperationContent*) process_token_list[0].content;
+
+            if (op_content->operation_type == OP_SUBTRACTION)
+            {
+                MathNode* negation_node = malloc(sizeof(MathNode));
+                negation_node->type = NODE_NEGATION;
+
+                NodeNegationContent* negation_content = malloc(sizeof(NodeNegationContent));
+                negation_content->negatedTreeRootNode = parse_operand_node(token_list, token_offset + 1, parsed_tokens_amount);;
+
+                negation_node->nodeContent = negation_content;
+
+                (*parsed_tokens_amount)++;
+
+                return negation_node;
+            }
+        }
+
+
         case TOK_UNKNOWN:
         case TOK_END:
             return NULL; //syntax error
