@@ -8,10 +8,10 @@
 
 int main()
 {
-    const char* expression = "-1 + 45 - (255 - -3)";
+    const char* expression = "1 + 1";
 
 
-    Token *pToken = tokenize_expression(expression);
+    Token* token_list = tokenize_expression(expression);
     char buffer[8];
 
     memset(buffer, 0, sizeof(buffer));
@@ -19,7 +19,7 @@ int main()
 //#define ITERATE_TOKENS
 #ifdef ITERATE_TOKENS
     Token t;
-    Token* iterable_tokenp = pToken;
+    Token* iterable_tokenp = token_list;
     while (1)
     {
         if (t.tokenType == TOK_END) break;
@@ -32,7 +32,7 @@ int main()
     }
     while (t.tokenType != TOK_END);
 #endif
-    MathNode* tree = create_tree(pToken);
+    MathNode* tree = create_tree(token_list);
 
     int am = get_node_amount(tree);
 
@@ -84,11 +84,12 @@ int main()
                 printf("node_%d -> node_%d \n", i, left_node_index);
                 printf("node_%d -> node_%d \n", i, right_node_index);
             }
-                
         }
     }
 
     printf("}\n");
+
+    free_tree(tree);
 
     return 0;
 }

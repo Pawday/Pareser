@@ -120,7 +120,7 @@ IndexedMathNode* index_nodes(MathNode *node_list, int node_list_length)
 
 
 
-unsigned int get_index_by_node(IndexedMathNode* indexed_node_list, size_t node_list_length, MathNode *node)
+unsigned int get_index_by_node(IndexedMathNode* indexed_node_list, size_t node_list_length, MathNode* node)
 {
     for (size_t i = 0; i < node_list_length; i++)
     {

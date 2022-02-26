@@ -41,3 +41,5 @@ typedef struct NodeNegationContent
 MathNode* create_tree(Token* token_list);
 
 MathNode* create_number_node(Token number_token);
+
+void free_tree(MathNode* treeRoot);

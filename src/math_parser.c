@@ -191,7 +191,7 @@ MathNode* create_operation_tree(OperationType operationType, MathNode* leftOpera
 
     ret->type = NODE_OPERATION;
 
-    NodeOperationContent* nodeOperationContent = malloc(sizeof(NodeNumberContent));
+    NodeOperationContent* nodeOperationContent = malloc(sizeof(NodeOperationContent));
 
     nodeOperationContent->operationType = operationType;
 

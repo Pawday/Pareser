@@ -4,7 +4,7 @@
 
 typedef struct IndexedMathNode
 {
-    unsigned node_index;
+    unsigned int node_index;
     MathNode* node;
 } IndexedMathNode;
 
